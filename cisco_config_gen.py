@@ -4,9 +4,9 @@ from datetime import datetime
 from groq import Groq
 
 # Parámetros obligatorios de la rúbrica
-MODELO_GROQ = "llama-3.1-8b-instant" # Modelo actualizado
-TEMP = 0.2                           # Configuración determinística (<= 0.2)
-MAX_TOKENS = 800                     # (>= 800)
+MODELO_GROQ = "llama-3.1-8b-instant" 
+TEMP = 0.2                           
+MAX_TOKENS = 800                     
 
 def guardar_configuracion(texto, tipo_escenario):
     """Guarda la salida en la carpeta /configs/ con timestamp."""
@@ -63,13 +63,13 @@ def escenario_a_vlans():
     vlan_id = input("Ingresa el ID de la VLAN (1-4094): ").strip()
     
     if not vlan_id.isdigit() or not (1 <= int(vlan_id) <= 4094):
-        print("\n[!] ERROR: El ID de la VLAN debe ser un número entre 1 y 4094.")
+        print("\n[!] ERROR: ID de VLAN inválido.")
         return
         
-    nombre = input("Ingresa el nombre de la VLAN (ej. GESTION): ").strip()
-    puertos = input("Ingresa los puertos a asignar (ej. FastEthernet0/1 - 5): ").strip()
+    nombre = input("Ingresa el nombre de la VLAN: ").strip()
+    puertos = input("Ingresa los puertos (ej. Fa0/1 - 10): ").strip()
     
-    prompt = f"Crea la VLAN {vlan_id} con el nombre {nombre}. Asigna los puertos {puertos} en modo acceso a esta VLAN. Configura la interfaz GigabitEthernet0/1 en modo trunk permitiendo pasar la VLAN {vlan_id}. Entregame solo los comandos de Cisco IOS."
+    prompt = f"Crea la VLAN {vlan_id} con el nombre {nombre}. Asigna los puertos {puertos} en modo acceso. Configura Gi0/1 en modo trunk para la VLAN {vlan_id}."
     generar_cisco_ios(prompt, "A")
 
 def escenario_b_ospf():
@@ -77,12 +77,25 @@ def escenario_b_ospf():
     proceso_id = input("Ingresa el ID del proceso OSPF (1-65535): ").strip()
 
     if not proceso_id.isdigit() or not (1 <= int(proceso_id) <= 65535):
-        print("\n[!] ERROR: El ID de proceso OSPF debe ser numérico entre 1 y 65535.")
+        print("\n[!] ERROR: ID de proceso OSPF inválido.")
         return
 
-    redes = input("Ingresa las redes a anunciar con su wildcard y área (ej. 192.168.1.0 0.0.0.255 area 0): ").strip()
-    prompt = f"Genera la configuración Cisco IOS para un router usando OSPF con el ID de proceso {proceso_id}. Anuncia las siguientes redes estrictamente: {redes}. Entregame solo los comandos."
+    redes = input("Ingresa redes (ej. 192.168.1.0 0.0.0.255 area 0): ").strip()
+    prompt = f"Configura OSPF proceso {proceso_id}. Anuncia las redes: {redes}. Solo comandos Cisco IOS."
     generar_cisco_ios(prompt, "B")
+
+def escenario_c_subnetting():
+    print("\n--- Escenario C: Subnetting e Interfaces ---")
+    red_base = input("Ingresa la red base (ej. 192.168.10.0): ").strip()
+    prefijo = input("Ingresa el prefijo (8-30): ").strip()
+
+    if not prefijo.isdigit() or not (8 <= int(prefijo) <= 30):
+        print("\n[!] ERROR: El prefijo debe estar entre 8 y 30.")
+        return
+
+    subredes = input("Cantidad de subredes requeridas: ").strip()
+    prompt = f"Realiza subnetting de {red_base}/{prefijo} para {subredes} subredes. Genera comandos para asignar la primera IP utilizable de la Subred 1 a Gi0/0 y la primera IP de la Subred 2 a Gi0/1. Incluye no shutdown."
+    generar_cisco_ios(prompt, "C")
 
 def main():
     while True:
@@ -91,7 +104,7 @@ def main():
         print("****************************************")
         print("1. Escenario A: VLANs y Trunking")
         print("2. Escenario B: OSPF")
-        print("3. Escenario C: Subnetting e Interfaces (En construcción)")
+        print("3. Escenario C: Subnetting e Interfaces")
         print("0. Salir")
 
         opcion = input("\nSelecciona una opción: ").strip()
@@ -101,12 +114,12 @@ def main():
         elif opcion == "2":
             escenario_b_ospf()
         elif opcion == "3":
-            print("\n[!] El Escenario C estará disponible en la próxima actualización.")
+            escenario_c_subnetting()
         elif opcion == "0":
-            print("Saliendo del generador...")
+            print("Saliendo...")
             sys.exit()
         else:
-            print("Opción inválida. Intenta nuevamente.")
+            print("Opción inválida.")
 
 if __name__ == "__main__":
     main()
