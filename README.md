@@ -31,5 +31,9 @@ $env:GROQ_API_KEY="tu_api_key_aqui"
 4- Ejecutar el programa:
 python cisco_config_gen.py
 
+## Justificación de Parámetros de IA
+- **Temperature (0.2):** Se seleccionó un valor bajo para garantizar respuestas precisas y determinísticas, evitando alucinaciones en los comandos de configuración.
+- **Max Tokens (800):** Se estableció este límite para asegurar que las configuraciones complejas (especialmente en subnetting) se entreguen completas sin cortes abruptos.
+
 👤 Autor
 Marco Castillo Ramos - Estudiante de Ingeniería - 2026
