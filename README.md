@@ -35,5 +35,18 @@ python cisco_config_gen.py
 - **Temperature (0.2):** Se seleccionó un valor bajo para garantizar respuestas precisas y determinísticas, evitando alucinaciones en los comandos de configuración.
 - **Max Tokens (800):** Se estableció este límite para asegurar que las configuraciones complejas (especialmente en subnetting) se entreguen completas sin cortes abruptos.
 
+## Ejemplos de Uso
+- **Escenario A:** Entrada: VLAN 10, GESTION, Fa0/1-5 -> Salida: Comandos `vlan 10`, `name GESTION`, etc.
+- **Escenario B:** Entrada: OSPF 1, 10.0.0.0 0.0.0.255 area 0 -> Salida: `router ospf 1`, `network...`
+- **Escenario C:** Entrada: 192.168.1.0/24, 2 subredes -> Salida: Cálculo de IPs y asignación a Gi0/0 y Gi0/1.
+
+## Limitaciones Conocidas
+- Requiere conexión activa a internet para contactar la API de Groq.
+- El modelo `llama-3.1-8b-instant` tiene un límite de velocidad (Rate Limit) según el nivel de cuenta del usuario.
+
+## 🎁 Bonificaciones Implementadas
+- **Escenario Libre (+3 pts):** Se añadió el **Escenario D (ACLs)** para permitir la creación de filtros de tráfico de red.
+- **Modo Conversacional (+2 pts):** El programa ahora mantiene un historial de chat. Después de generar una configuración, el usuario puede pedir ajustes (ej: "cambia la interfaz") y la IA responderá manteniendo el contexto previo.
+
 👤 Autor
 Marco Castillo Ramos - Estudiante de Ingeniería - 2026
